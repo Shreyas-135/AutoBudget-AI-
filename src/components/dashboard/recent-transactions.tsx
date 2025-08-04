@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useState } from "react";
 import {
   Briefcase,
   Car,
@@ -9,7 +11,6 @@ import {
   ShoppingBag,
   UtensilsCrossed,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,49 +39,129 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
+import { useToast } from "@/hooks/use-toast";
 
-const expenses = [
+
+type Transaction = {
+  icon: React.ElementType;
+  category: string;
+  description: string;
+  amount: number;
+  date: string;
+};
+
+const initialExpenses: Transaction[] = [
   {
     icon: UtensilsCrossed,
     category: "Food",
     description: "Groceries from SuperMart",
     amount: -78.54,
-    date: "2024-07-29",
+    date: new Date().toISOString().split('T')[0],
   },
   {
     icon: Car,
     category: "Transport",
     description: "Monthly train pass",
     amount: -120.0,
-    date: "2024-07-28",
+    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   },
   {
     icon: ShoppingBag,
     category: "Shopping",
     description: "New shoes from Zappos",
     amount: -149.99,
-    date: "2024-07-25",
+    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   },
   {
     icon: Home,
     category: "Housing",
-    description: "Rent for August",
+    description: "Rent for this month",
     amount: -1500.0,
-    date: "2024-07-25",
+    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   },
 ];
 
-const income = [
+const initialIncome: Transaction[] = [
   {
     icon: Briefcase,
     category: "Salary",
     description: "Monthly paycheck",
     amount: 5329.0,
-    date: "2024-07-25",
+    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   },
 ];
 
+const transactionSchema = z.object({
+  type: z.enum(["income", "expense"]),
+  description: z.string().min(1, "Description is required."),
+  amount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
+  category: z.string().min(1, "Category is required."),
+});
+
+
+const categoryIcons = {
+    Food: UtensilsCrossed,
+    Transport: Car,
+    Shopping: ShoppingBag,
+    Housing: Home,
+    Salary: Briefcase,
+    Default: Repeat
+}
+
+const getIconForCategory = (category: string) => {
+    return (categoryIcons as any)[category] || categoryIcons.Default;
+}
+
 export function RecentTransactions() {
+  const [expenses, setExpenses] = useState<Transaction[]>(initialExpenses);
+  const [income, setIncome] = useState<Transaction[]>(initialIncome);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      type: "expense" as "income" | "expense",
+      description: "",
+      amount: 0,
+      category: "",
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof transactionSchema>) => {
+    const newTransaction: Transaction = {
+        icon: getIconForCategory(data.category),
+        category: data.category,
+        description: data.description,
+        amount: data.type === 'expense' ? -Math.abs(data.amount) : Math.abs(data.amount),
+        date: new Date().toISOString().split('T')[0],
+    };
+
+    if (data.type === 'expense') {
+        setExpenses(prev => [newTransaction, ...prev]);
+    } else {
+        setIncome(prev => [newTransaction, ...prev]);
+    }
+    
+    toast({
+        title: "Success",
+        description: "Transaction added successfully.",
+    })
+    setIsDialogOpen(false);
+    form.reset();
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -93,7 +174,7 @@ export function RecentTransactions() {
             A list of your recent income and expenses.
           </CardDescription>
         </div>
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1">
               <PlusCircle className="h-4 w-4" />
@@ -107,24 +188,73 @@ export function RecentTransactions() {
                 Add a new income or expense to your account.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-               <div className="grid grid-cols-4 items-center gap-4">
-                 <Label htmlFor="type" className="text-right">Type</Label>
-                 {/* This would be a select in a real app */}
-                 <Input id="type" defaultValue="Expense" className="col-span-3" />
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-                 <Label htmlFor="description" className="text-right">Description</Label>
-                 <Input id="description" placeholder="e.g. Groceries" className="col-span-3" />
-               </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                 <Label htmlFor="amount" className="text-right">Amount</Label>
-                 <Input id="amount" type="number" placeholder="e.g. 78.54" className="col-span-3" />
-               </div>
-            </div>
-            <DialogFooter>
-                <Button type="submit">Save Transaction</Button>
-            </DialogFooter>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+                    <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label>Type</Label>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select transaction type" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="expense">Expense</SelectItem>
+                                        <SelectItem value="income">Income</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label>Description</Label>
+                                <FormControl>
+                                    <Input placeholder="e.g. Groceries" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="amount"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label>Amount</Label>
+                                <FormControl>
+                                    <Input type="number" placeholder="e.g. 78.54" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label>Category</Label>
+                                <FormControl>
+                                    <Input placeholder="e.g. Food" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <DialogFooter>
+                        <Button type="submit">Save Transaction</Button>
+                    </DialogFooter>
+                </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </CardHeader>
@@ -149,13 +279,7 @@ export function RecentTransactions() {
 function TransactionTable({
   transactions,
 }: {
-  transactions: {
-    icon: React.ElementType;
-    category: string;
-    description: string;
-    amount: number;
-    date: string;
-  }[];
+  transactions: Transaction[];
 }) {
   return (
     <Table>
@@ -183,7 +307,7 @@ function TransactionTable({
             </TableCell>
             <TableCell
               className={`text-right font-semibold ${
-                transaction.amount > 0 ? "text-accent" : ""
+                transaction.amount > 0 ? "text-accent" : "text-destructive"
               }`}
             >
               {transaction.amount < 0
