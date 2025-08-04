@@ -55,6 +55,18 @@ const personalAssistantFlow = ai.defineFlow(
       prompt,
     });
     
+    const toolRequest = llmResponse.toolRequest();
+    if (toolRequest) {
+      const toolResponse = await toolRequest.run();
+      const llmResponse2 = await personalAssistantPrompt({
+        history: (history || []).concat(llmResponse.history() || [], toolResponse.history() || []),
+        prompt,
+      });
+      return {
+        response: llmResponse2.text(),
+      };
+    }
+
     return {
         response: llmResponse.text(),
     };
