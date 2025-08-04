@@ -14,6 +14,7 @@ import { getStockPrice } from './stock-insights';
 import { getTaxCalculation } from './tax-calculator';
 import { getFinancialInsights } from './financial-insights';
 import { createTransaction } from './transaction-entry';
+import { MessageData } from 'genkit';
 
 const PersonalAssistantInputSchema = z.object({
   history: z.array(z.any()).optional().describe('The chat history.'),
@@ -29,11 +30,15 @@ export type PersonalAssistantOutput = z.infer<typeof PersonalAssistantOutputSche
 const personalAssistantPrompt = ai.definePrompt({
     name: 'personalAssistantPrompt',
     tools: [getStockPrice, getTaxCalculation, getFinancialInsights, createTransaction],
-    system: `You are a helpful and friendly personal financial assistant.
-    Answer questions about the user's finances.
-    If you have the user's income and expenses, you can provide financial insights.
-    If the user asks you to record a transaction, use the createTransaction tool.
-    If you don't know the answer, say that you don't know.`,
+    system: `You are a helpful, friendly, and conversational personal financial assistant.
+    Your goal is to help users understand their finances and make better decisions.
+    - When asked for data, convert it into a narrative insight (financial storytelling).
+    - Engage in interactive dialogue to provide financial education.
+    - If you have the user's income and expenses, you can provide financial insights.
+    - If the user asks you to record a transaction, use the createTransaction tool.
+    - If the user asks about stock prices or taxes, use the appropriate tools.
+    - Remember previous interactions to provide context-aware responses.
+    - If you don't know the answer, say that you don't know.`,
 });
 
 const personalAssistantFlow = ai.defineFlow(
@@ -45,31 +50,38 @@ const personalAssistantFlow = ai.defineFlow(
   async (input) => {
     const { history, prompt } = input;
     
+    // Start with the initial prompt and history
     let llmResponse = await personalAssistantPrompt({
       history,
       prompt,
     });
     
+    // Loop to handle tool requests
     while (true) {
-        const toolRequest = llmResponse.toolRequest;
-        if (!toolRequest) {
-            break;
-        }
+      const toolRequest = llmResponse.toolRequest;
+      if (!toolRequest) {
+        break;
+      }
 
-        const toolResponse = await toolRequest.run();
+      // Execute the requested tool
+      const toolResponse = await toolRequest.run();
 
-        llmResponse = await personalAssistantPrompt({
-            history: [
-                ...(history || []),
-                { role: 'user', content: [{ text: prompt }] },
-                { role: 'model', content: llmResponse.content },
-            ],
-            prompt: toolResponse,
-        });
+      // Build the history for the next call, including the tool request and response
+      const fullHistory: MessageData[] = [
+          ...(history || []),
+          { role: 'user', content: [{ text: prompt }] },
+          { role: 'model', content: llmResponse.content! },
+          { role: 'tool', content: toolResponse }
+      ];
+
+      // Call the LLM again with the updated history to get the final response
+      llmResponse = await personalAssistantPrompt({
+          history: fullHistory,
+      });
     }
 
     return {
-        response: llmResponse.text,
+        response: ll.mResponse.text!,
     };
   }
 );
