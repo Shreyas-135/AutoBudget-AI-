@@ -183,7 +183,7 @@ function TransactionTable({
             </TableCell>
             <TableCell
               className={`text-right font-semibold ${
-                transaction.amount > 0 ? "text-accent-600" : ""
+                transaction.amount > 0 ? "text-accent" : ""
               }`}
             >
               {transaction.amount < 0
