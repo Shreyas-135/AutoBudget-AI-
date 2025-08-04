@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@radix-ui/react-zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { personalAssistant } from "@/ai/flows/personal-assistant";
 import { Button } from "@/components/ui/button";
@@ -53,9 +53,9 @@ export default function AIAssistantPage() {
 
     try {
       const history = messages.map(msg => ({
-          role: msg.role,
+          role: msg.role === 'assistant' ? 'model' : 'user',
           content: [{text: msg.content}]
-      }))
+      }));
       const result = await personalAssistant({ history, prompt: data.prompt });
       const assistantMessage: ChatMessage = {
         role: "assistant",

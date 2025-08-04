@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -18,7 +19,7 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="w-full max-w-md">
+        <Card className="w-full max-w-md">
             <CardHeader className="text-center">
                 <CardTitle className="text-3xl font-bold font-headline">Create an account</CardTitle>
                 <CardDescription className="text-balance text-muted-foreground">
@@ -64,6 +65,6 @@ export default function SignupPage() {
                     </Link>
                 </div>
             </CardContent>
-        </div>
+        </Card>
     )
 }

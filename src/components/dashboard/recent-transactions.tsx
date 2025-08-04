@@ -110,7 +110,7 @@ const transactionSchema = z.object({
 });
 
 
-const categoryIcons = {
+const categoryIcons: Record<string, React.ElementType> = {
     Food: UtensilsCrossed,
     Transport: Car,
     Shopping: ShoppingBag,
@@ -120,7 +120,7 @@ const categoryIcons = {
 }
 
 const getIconForCategory = (category: string) => {
-    return (categoryIcons as any)[category] || categoryIcons.Default;
+    return categoryIcons[category] || categoryIcons.Default;
 }
 
 export function RecentTransactions() {
@@ -307,7 +307,7 @@ function TransactionTable({
             </TableCell>
             <TableCell
               className={`text-right font-semibold ${
-                transaction.amount > 0 ? "text-accent" : "text-destructive"
+                transaction.amount > 0 ? "text-green-600" : "text-destructive"
               }`}
             >
               {transaction.amount < 0

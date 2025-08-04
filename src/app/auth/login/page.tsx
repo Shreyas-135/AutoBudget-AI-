@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -18,7 +19,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="w-full max-w-md">
+        <Card className="w-full max-w-md">
             <CardHeader className="text-center">
                 <CardTitle className="text-3xl font-bold font-headline">Login</CardTitle>
                 <CardDescription className="text-balance text-muted-foreground">
@@ -62,6 +63,6 @@ export default function LoginPage() {
                     </Link>
                 </div>
             </CardContent>
-        </div>
+        </Card>
     );
 }
