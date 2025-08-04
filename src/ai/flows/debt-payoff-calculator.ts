@@ -18,7 +18,7 @@ const DebtSchema = z.object({
   minimumPayment: z.number().describe('The minimum monthly payment.'),
 });
 
-export const DebtPayoffInputSchema = z.object({
+const DebtPayoffInputSchema = z.object({
   debts: z.array(DebtSchema).describe('A list of the user\'s current debts.'),
   extraPayment: z.number().optional().describe('An optional extra amount to pay each month across all debts.'),
 });
@@ -37,7 +37,7 @@ const PayoffPlanSchema = z.object({
   breakdown: z.array(PayoffStepSchema).describe('A month-by-month breakdown of payments for the first 12 months.'),
 });
 
-export const DebtPayoffOutputSchema = z.object({
+const DebtPayoffOutputSchema = z.object({
   avalanche: PayoffPlanSchema.describe('The payoff plan using the Avalanche method (paying highest APR first).'),
   snowball: PayoffPlanSchema.describe('The payoff plan using the Snowball method (paying lowest balance first).'),
 });

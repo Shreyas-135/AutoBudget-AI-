@@ -4,11 +4,11 @@
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   getDebtPayoffPlan,
-  DebtPayoffInput,
-  DebtPayoffOutput,
-  DebtPayoffInputSchema,
+  type DebtPayoffInput,
+  type DebtPayoffOutput,
 } from "@/ai/flows/debt-payoff-calculator";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +41,19 @@ import { Loader2, PlusCircle, Trash2, Wand2, ArrowRight, Trophy } from "lucide-r
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "../ui/scroll-area";
 import { Badge } from "../ui/badge";
+
+const DebtPayoffInputSchema = z.object({
+  debts: z.array(
+    z.object({
+      name: z.string().min(1, "Debt name is required."),
+      balance: z.coerce.number().min(0, "Balance must be a positive number."),
+      apr: z.coerce.number().min(0, "APR must be a positive number."),
+      minimumPayment: z.coerce.number().min(0, "Minimum payment must be a positive number."),
+    })
+  ).min(1, "Please add at least one debt."),
+  extraPayment: z.coerce.number().optional(),
+});
+
 
 export function DebtPayoffCalculator() {
   const [loading, setLoading] = useState(false);
