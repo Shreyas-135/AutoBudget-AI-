@@ -265,10 +265,10 @@ export function RecentTransactions() {
             <TabsTrigger value="income">Income</TabsTrigger>
           </TabsList>
           <TabsContent value="expenses">
-            <TransactionTable transactions={expenses} />
+            <TransactionTable transactions={expenses.slice(0,5)} />
           </TabsContent>
           <TabsContent value="income">
-            <TransactionTable transactions={income} />
+            <TransactionTable transactions={income.slice(0,5)} />
           </TabsContent>
         </Tabs>
       </CardContent>
