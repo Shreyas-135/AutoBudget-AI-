@@ -24,6 +24,7 @@ import {
   Target,
   BarChart,
   Bot,
+  Heart,
 } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
@@ -34,6 +35,7 @@ const navItems = [
   { href: "/dashboard/transactions", icon: Repeat, label: "Transactions" },
   { href: "/dashboard/budgets", icon: Target, label: "Budgets" },
   { href: "/dashboard/reports", icon: BarChart, label: "Reports" },
+  { href: "/dashboard/financial-wellness", icon: Heart, label: "Wellness" },
   { href: "#", icon: Settings, label: "Settings" },
 ];
 

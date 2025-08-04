@@ -10,6 +10,7 @@ import {
   Settings,
   Target,
   User,
+  Heart,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -31,6 +32,7 @@ const menuItems = [
   { href: "/dashboard/transactions", icon: Repeat, label: "Transactions" },
   { href: "/dashboard/budgets", icon: Target, label: "Budgets" },
   { href: "/dashboard/reports", icon: BarChart, label: "Reports" },
+  { href: "/dashboard/financial-wellness", icon: Heart, label: "Wellness" },
 ];
 
 export default function DashboardLayout({
