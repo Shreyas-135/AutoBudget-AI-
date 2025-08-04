@@ -42,10 +42,30 @@ const personalAssistantFlow = ai.defineFlow(
   },
   async (input) => {
     const { history, prompt } = input;
-    const llmResponse = await personalAssistantPrompt({
+    
+    let llmResponse = await personalAssistantPrompt({
       history,
       prompt,
     });
+    
+    while (true) {
+        const toolRequest = llmResponse.toolRequest;
+        if (!toolRequest) {
+            break;
+        }
+
+        const toolResponse = await toolRequest.run();
+
+        llmResponse = await personalAssistantPrompt({
+            history: [
+                ...(history || []),
+                { role: 'user', content: [{ text: prompt }] },
+                { role: 'model', content: llmResponse.content },
+            ],
+            prompt: toolResponse,
+        });
+    }
+
     return {
         response: llmResponse.text,
     };
