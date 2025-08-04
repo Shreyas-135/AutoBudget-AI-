@@ -31,10 +31,22 @@ import {
 } from "@/components/ui/form";
 import { Loader2, RefreshCw, TrendingUp, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "../ui/badge";
+import { cn } from "@/lib/utils";
 
 const stockInsightsSchema = z.object({
   ticker: z.string().min(1, "Ticker symbol is required.").max(5, "Ticker must be 5 characters or less."),
 });
+
+const RecommendationBadge = ({ recommendation }: { recommendation: StockInsightsOutput['recommendation'] }) => {
+    const variant = {
+        'Buy': 'default',
+        'Hold': 'secondary',
+        'Sell': 'destructive'
+    }[recommendation] as "default" | "secondary" | "destructive";
+
+    return <Badge variant={variant}>{recommendation}</Badge>;
+}
 
 export function StockAdvisor() {
   const [loading, setLoading] = useState(false);
@@ -144,12 +156,27 @@ export function StockAdvisor() {
             
             {result && (
               <Card className="mt-4 bg-muted/50">
-                <CardContent className="p-4 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-bold font-headline">Analysis for {form.getValues('ticker').toUpperCase()}</h4>
-                      {isPolling && <RefreshCw className="h-4 w-4 text-muted-foreground animate-spin" />}
+                <CardContent className="p-4 space-y-3">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h4 className="font-bold font-headline">Analysis for {form.getValues('ticker').toUpperCase()}</h4>
+                            <p className="text-2xl font-bold">${result.price.toFixed(2)}</p>
+                        </div>
+                        {isPolling && <RefreshCw className="h-4 w-4 text-muted-foreground animate-spin" />}
                     </div>
+
                     <p className="text-sm text-muted-foreground">{result.analysis}</p>
+                    
+                    <div className="flex items-center justify-between gap-4 pt-2">
+                        <div className="space-y-1">
+                            <p className="text-xs font-semibold text-muted-foreground">Recommendation</p>
+                            <RecommendationBadge recommendation={result.recommendation} />
+                        </div>
+                        <div className="space-y-1 text-right">
+                             <p className="text-xs font-semibold text-muted-foreground">Confidence</p>
+                             <p className="font-bold text-sm">{(result.confidenceScore * 100).toFixed(0)}%</p>
+                        </div>
+                    </div>
                 </CardContent>
               </Card>
             )}

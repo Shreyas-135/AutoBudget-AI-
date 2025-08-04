@@ -18,9 +18,15 @@ const StockInsightsInputSchema = z.object({
 export type StockInsightsInput = z.infer<typeof StockInsightsInputSchema>;
 
 const StockInsightsOutputSchema = z.object({
-  analysis: z.string().describe('A brief analysis of the stock and its current price.'),
+  price: z.number().describe('The current stock price.'),
+  analysis: z.string().describe('A detailed analysis of the stock, incorporating recent news and market sentiment.'),
+  recommendation: z.enum(['Buy', 'Sell', 'Hold']).describe('The recommended action for the stock.'),
+  confidenceScore: z.number().min(0).max(1).describe('A confidence score (0-1) for the recommendation.'),
 });
 export type StockInsightsOutput = z.infer<typeof StockInsightsOutputSchema>;
+
+// In-memory store to simulate price changes
+const stockPrices: Record<string, number> = {};
 
 export const getStockPrice = ai.defineTool(
   {
@@ -32,20 +38,33 @@ export const getStockPrice = ai.defineTool(
     outputSchema: z.number(),
   },
   async (input) => {
-    // In a real application, you would fetch this from a financial API
-    console.log(`Fetching price for ${input.ticker}...`);
-    return Math.random() * 1000;
+    // Simulate more realistic price changes
+    const basePrice = stockPrices[input.ticker] || Math.random() * 1000;
+    const changePercent = (Math.random() - 0.5) * 0.1; // +/- 5% change
+    const newPrice = basePrice * (1 + changePercent);
+    stockPrices[input.ticker] = newPrice;
+    
+    console.log(`Fetching price for ${input.ticker}... price: ${newPrice.toFixed(2)}`);
+    return newPrice;
   }
 );
 
 const stockInsightPrompt = ai.definePrompt({
     name: 'stockInsightPrompt',
-    input: { schema: StockInsightsInputSchema },
+    input: { schema: z.object({ ticker: z.string(), price: z.number() }) },
     output: { schema: StockInsightsOutputSchema },
     tools: [getStockPrice],
-    prompt: `You are a financial analyst. Analyze the stock for the given ticker: {{ticker}}.
-    Use the getStockPrice tool to find the current price and include it in your analysis.
-    Provide a brief summary of the potential of this stock.`,
+    prompt: `You are a sophisticated financial analyst AI for a top-tier investment firm.
+    
+    Your task is to provide a comprehensive, yet easy-to-understand analysis for a retail investor based on a stock's current price.
+    In your analysis, you MUST invent and incorporate plausible-sounding "recent news" (e.g., earnings reports, product launches, regulatory news) and "market sentiment" (e.g., bullish, bearish, neutral due to sector trends).
+    
+    Based on the price and your simulated contextual factors, provide a clear recommendation (Buy, Sell, or Hold) and a confidence score for that recommendation. The analysis should be a concise paragraph.
+    
+    - Ticker: {{ticker}}
+    - Current Price: {{price}}
+    
+    Generate a full JSON output with all fields populated.`,
 });
 
 const stockInsightsFlow = ai.defineFlow(
@@ -55,8 +74,9 @@ const stockInsightsFlow = ai.defineFlow(
     outputSchema: StockInsightsOutputSchema,
   },
   async (input) => {
-    const {output} = await stockInsightPrompt(input);
-    return output!;
+    const price = await getStockPrice(input);
+    const {output} = await stockInsightPrompt({ ticker: input.ticker, price });
+    return { ...output!, price };
   }
 );
 
