@@ -10,7 +10,7 @@ import { DebtPayoffCalculator } from "@/components/dashboard/debt-payoff-calcula
 
 export default function DashboardPage() {
   return (
-    <>
+    <div className="flex flex-1 flex-col gap-6 p-4 sm:px-6 sm:py-6">
       <div>
         <h1 className="text-2xl font-bold font-headline tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">Here's a summary of your financial activity.</p>
@@ -48,6 +48,6 @@ export default function DashboardPage() {
           <DebtPayoffCalculator />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -50,38 +50,13 @@ const personalAssistantFlow = ai.defineFlow(
   async (input) => {
     const { history, prompt } = input;
     
-    // Start with the initial prompt and history
-    let llmResponse = await personalAssistantPrompt({
+    const llmResponse = await personalAssistantPrompt({
       history,
       prompt,
     });
     
-    // Loop to handle tool requests
-    while (true) {
-      const toolRequest = llmResponse.toolRequest;
-      if (!toolRequest) {
-        break;
-      }
-
-      // Execute the requested tool
-      const toolResponse = await toolRequest.run();
-
-      // Build the history for the next call, including the tool request and response
-      const fullHistory: MessageData[] = [
-          ...(history || []),
-          { role: 'user', content: [{ text: prompt }] },
-          { role: 'model', content: llmResponse.content! },
-          { role: 'tool', content: toolResponse }
-      ];
-
-      // Call the LLM again with the updated history to get the final response
-      llmResponse = await personalAssistantPrompt({
-          history: fullHistory,
-      });
-    }
-
     return {
-        response: ll.mResponse.text!,
+        response: llmResponse.text(),
     };
   }
 );
