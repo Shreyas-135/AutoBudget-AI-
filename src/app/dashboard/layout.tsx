@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   BarChart,
+  Bot,
   LayoutDashboard,
   Repeat,
   Settings,
@@ -25,6 +26,7 @@ import { DashboardHeader } from "@/components/dashboard/header";
 
 const menuItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/ai-assistant", icon: Bot, label: "AI Assistant" },
   { href: "#", icon: Repeat, label: "Transactions" },
   { href: "#", icon: Target, label: "Budgets" },
   { href: "#", icon: BarChart, label: "Reports" },

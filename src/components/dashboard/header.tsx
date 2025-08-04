@@ -22,12 +22,14 @@ import {
   Repeat,
   Target,
   BarChart,
+  Bot,
 } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/ai-assistant", icon: Bot, label: "AI Assistant" },
   { href: "#", icon: Repeat, label: "Transactions" },
   { href: "#", icon: Target, label: "Budgets" },
   { href: "#", icon: BarChart, label: "Reports" },

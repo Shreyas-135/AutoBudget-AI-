@@ -4,6 +4,7 @@
  * @fileOverview An AI-powered stock analysis flow that uses a tool to fetch stock prices.
  * 
  * - getStockInsights - A function that provides AI-driven insights for a given stock ticker.
+ * - getStockPrice - A tool function to get the current price of a stock.
  * - StockInsightsInput - The input type for the getStockInsights function.
  * - StockInsightsOutput - The return type for the getStockInsights function.
  */
@@ -21,7 +22,7 @@ const StockInsightsOutputSchema = z.object({
 });
 export type StockInsightsOutput = z.infer<typeof StockInsightsOutputSchema>;
 
-const getStockPrice = ai.defineTool(
+export const getStockPrice = ai.defineTool(
   {
     name: 'getStockPrice',
     description: 'Returns the current market value of a stock for a given ticker.',
