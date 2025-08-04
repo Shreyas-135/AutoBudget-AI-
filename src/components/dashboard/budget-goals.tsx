@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -45,13 +46,18 @@ export function BudgetGoals() {
           const progress = (goal.current / goal.target) * 100;
           return (
             <div key={goal.name}>
-              <div className="flex justify-between mb-1">
+              <div className="flex justify-between mb-2 items-center">
                 <span className="text-sm font-medium">{goal.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  ${goal.current.toLocaleString()} / ${goal.target.toLocaleString()}
+                <span className="text-sm font-bold text-primary">
+                  {progress.toFixed(0)}%
                 </span>
               </div>
               <Progress value={progress} aria-label={`${goal.name} progress`} />
+               <div className="flex justify-end mt-1">
+                 <span className="text-xs text-muted-foreground">
+                    ${goal.current.toLocaleString()} / ${goal.target.toLocaleString()}
+                </span>
+               </div>
             </div>
           );
         })}
