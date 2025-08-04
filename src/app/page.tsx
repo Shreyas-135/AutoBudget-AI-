@@ -20,7 +20,7 @@ export default function LandingPage() {
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Logo />
         <Button asChild variant="ghost">
-          <Link href="/login">
+          <Link href="/auth/login">
             Sign In <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
@@ -36,7 +36,7 @@ export default function LandingPage() {
                 Your personal AI-powered financial advisor. Track income, manage expenses, and get smart insights to achieve your financial goals faster.
               </p>
               <Button asChild size="lg">
-                <Link href="/signup">
+                <Link href="/auth/signup">
                   Get Started for Free <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
