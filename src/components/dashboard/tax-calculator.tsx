@@ -83,7 +83,7 @@ export function TaxCalculator() {
   };
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex items-center gap-2">
             <Calculator className="h-6 w-6 text-primary" />
@@ -94,8 +94,8 @@ export function TaxCalculator() {
         </CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="grid md:grid-cols-2 gap-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow flex flex-col">
+            <CardContent className="grid md:grid-cols-2 gap-6 flex-grow">
                 <div className="space-y-4">
                     <FormField
                     control={form.control}
@@ -133,10 +133,18 @@ export function TaxCalculator() {
                         </FormItem>
                     )}
                     />
+                     <Button type="submit" disabled={loading}>
+                        {loading ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Wand2 className="mr-2 h-4 w-4" />
+                        )}
+                        Calculate
+                    </Button>
                 </div>
-                 <div>
+                 <div className="flex-grow">
                     {result && (
-                        <Card className="bg-muted/50">
+                        <Card className="bg-muted/50 h-full">
                             <CardHeader>
                                 <CardTitle className="font-headline text-lg">Estimated Tax</CardTitle>
                             </CardHeader>
@@ -167,23 +175,13 @@ export function TaxCalculator() {
                         </Card>
                     )}
                     {loading && (
-                        <div className="h-full flex items-center justify-center text-muted-foreground">
+                        <div className="h-full flex items-center justify-center text-muted-foreground rounded-lg bg-muted/50">
                             <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                            <p>Calculating your taxes...</p> 
                         </div>
                     )}
                 </div>
             </CardContent>
-            <CardFooter>
-                <Button type="submit" disabled={loading}>
-                {loading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Wand2 className="mr-2 h-4 w-4" />
-                )}
-                Calculate
-                </Button>
-            </CardFooter>
         </form>
       </Form>
     </Card>

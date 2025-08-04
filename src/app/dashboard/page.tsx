@@ -6,6 +6,7 @@ import { SpendingBreakdown } from "@/components/dashboard/spending-breakdown";
 import { StockAdvisor } from "@/components/dashboard/stock-advisor";
 import { BudgetGoals } from "@/components/dashboard/budget-goals";
 import { TaxCalculator } from "@/components/dashboard/tax-calculator";
+import { DebtPayoffCalculator } from "@/components/dashboard/debt-payoff-calculator";
 
 export default function DashboardPage() {
   return (
@@ -39,9 +40,12 @@ export default function DashboardPage() {
           <StockAdvisor />
         </div>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <div className="lg:col-span-7">
-            <TaxCalculator />
+       <div className="grid gap-6 md:grid-cols-2">
+        <div className="md:col-span-1">
+          <TaxCalculator />
+        </div>
+        <div className="md:col-span-1">
+          <DebtPayoffCalculator />
         </div>
       </div>
     </div>
