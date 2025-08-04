@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -24,8 +25,8 @@ const FinancialInsightsInputSchema = z.object({
 export type FinancialInsightsInput = z.infer<typeof FinancialInsightsInputSchema>;
 
 const FinancialInsightsOutputSchema = z.object({
-  summary: z.string().describe('A summary of the user\'s financial situation, focusing on the ratio of needs vs. wants.'),
-  advice: z.array(z.string()).describe('Personalized advice and behavioral coaching based on spending habits and financial psychology.'),
+  summary: z.string().describe('A summary of the user\'s financial situation, focusing on the ratio of needs vs. wants and peer comparison.'),
+  advice: z.array(z.string()).describe('Personalized advice and behavioral coaching based on spending habits, financial psychology, and peer benchmarks.'),
 });
 export type FinancialInsightsOutput = z.infer<typeof FinancialInsightsOutputSchema>;
 
@@ -37,16 +38,16 @@ const prompt = ai.definePrompt({
   name: 'financialInsightsPrompt',
   input: {schema: FinancialInsightsInputSchema},
   output: {schema: FinancialInsightsOutputSchema},
-  prompt: `You are a financial psychologist and coach. Your goal is to analyze a user's spending patterns and provide actionable, empathetic advice based on behavioral finance principles.
+  prompt: `You are a financial psychologist and coach who specializes in social finance. Your goal is to analyze a user's spending patterns and provide actionable, empathetic advice based on behavioral finance principles and social benchmarking.
 
-  Analyze the user's income, expenses, and savings goal. Provide a summary that highlights key financial ratios (e.g., savings rate, debt-to-income if applicable, spending on wants vs. needs).
+  Analyze the user's income, expenses, and savings goal. Provide a summary that highlights key financial ratios.
   
-  Then, offer personalized advice and coaching. Look for behavioral patterns in their spending. For example:
-  - Is there high spending in categories like "Food" or "Shopping" that might indicate emotional or impulse spending?
-  - Is there a lack of savings that might point to a present bias?
-  - Are their goals realistic given their spending habits?
-
-  Frame your advice as a supportive coach. Instead of just saying "spend less on X," offer strategies like "It looks like a significant portion of your budget goes to dining out. This can sometimes be a sign of stress or a need for convenience. Have you considered trying meal prepping as a way to both save money and have healthy food ready on busy days?"
+  Then, offer personalized advice. Look for behavioral patterns in their spending. Crucially, you MUST invent and incorporate plausible-sounding "anonymous peer spending benchmarks" into your analysis.
+  
+  For example, if their "Dining Out" spending is high, you could say: "Your spending on dining out is about 20% higher than the average for households with a similar income. This could be an area to explore for potential savings."
+  If their savings rate is good, you could say: "You're saving about 15% of your income, which is fantastic and puts you in the top quartile compared to your peers."
+  
+  Frame your advice as a supportive coach, using these benchmarks to provide context, not to judge.
   
   User Data:
   - Monthly Income: {{income}}
@@ -56,7 +57,7 @@ const prompt = ai.definePrompt({
   - {{category}}: {{amount}}
   {{/each}}
   
-  Generate a concise summary and a list of actionable, behavioral-focused advice.`,
+  Generate a concise summary and a list of actionable, behavioral-focused advice that includes social benchmarking.`,
 });
 
 const financialInsightsFlow = ai.defineFlow(
