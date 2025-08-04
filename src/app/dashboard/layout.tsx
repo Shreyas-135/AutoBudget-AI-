@@ -28,9 +28,9 @@ import { DashboardHeader } from "@/components/dashboard/header";
 const menuItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/dashboard/ai-assistant", icon: Bot, label: "AI Assistant" },
-  { href: "#", icon: Repeat, label: "Transactions" },
-  { href: "#", icon: Target, label: "Budgets" },
-  { href: "#", icon: BarChart, label: "Reports" },
+  { href: "/dashboard/transactions", icon: Repeat, label: "Transactions" },
+  { href: "/dashboard/budgets", icon: Target, label: "Budgets" },
+  { href: "/dashboard/reports", icon: BarChart, label: "Reports" },
 ];
 
 export default function DashboardLayout({
@@ -91,9 +91,9 @@ export default function DashboardLayout({
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+        <div className="flex flex-col sm:pl-14">
           <DashboardHeader />
-          <main className="flex-1 p-4 sm:px-6 sm:py-0 ">{children}</main>
+          <main className="flex-1">{children}</main>
         </div>
       </div>
     </SidebarProvider>
