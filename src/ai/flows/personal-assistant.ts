@@ -13,6 +13,7 @@ import { z } from 'genkit';
 import { getStockPrice } from './stock-insights';
 import { getTaxCalculation } from './tax-calculator';
 import { getFinancialInsights } from './financial-insights';
+import { createTransaction } from './transaction-entry';
 
 const PersonalAssistantInputSchema = z.object({
   history: z.array(z.any()).optional().describe('The chat history.'),
@@ -27,10 +28,11 @@ export type PersonalAssistantOutput = z.infer<typeof PersonalAssistantOutputSche
 
 const personalAssistantPrompt = ai.definePrompt({
     name: 'personalAssistantPrompt',
-    tools: [getStockPrice, getTaxCalculation, getFinancialInsights],
+    tools: [getStockPrice, getTaxCalculation, getFinancialInsights, createTransaction],
     system: `You are a helpful and friendly personal financial assistant.
     Answer questions about the user's finances.
     If you have the user's income and expenses, you can provide financial insights.
+    If the user asks you to record a transaction, use the createTransaction tool.
     If you don't know the answer, say that you don't know.`,
 });
 
