@@ -4,11 +4,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   getTaxCalculation,
   TaxCalculatorInput,
   TaxCalculatorOutput,
-  TaxCalculatorInputSchema,
 } from "@/ai/flows/tax-calculator";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -46,6 +45,11 @@ import {
 } from "@/components/ui/table";
 import { Loader2, Calculator, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const TaxCalculatorInputSchema = z.object({
+  income: z.coerce.number().min(1, "Income is required."),
+  filingStatus: z.enum(['single', 'married_jointly', 'married_separately', 'head_of_household']),
+});
 
 export function TaxCalculator() {
   const [loading, setLoading] = useState(false);

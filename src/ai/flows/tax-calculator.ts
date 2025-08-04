@@ -11,13 +11,13 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const TaxCalculatorInputSchema = z.object({
+const TaxCalculatorInputSchema = z.object({
   income: z.number().describe('The total annual income.'),
   filingStatus: z.enum(['single', 'married_jointly', 'married_separately', 'head_of_household']).describe('The tax filing status.'),
 });
 export type TaxCalculatorInput = z.infer<typeof TaxCalculatorInputSchema>;
 
-export const TaxCalculatorOutputSchema = z.object({
+const TaxCalculatorOutputSchema = z.object({
   estimatedTax: z.number().describe('The estimated total tax liability.'),
   breakdown: z.array(z.object({
     bracket: z.string().describe('The tax bracket (e.g., "10%", "12%").'),
