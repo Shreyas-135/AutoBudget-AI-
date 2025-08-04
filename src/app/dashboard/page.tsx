@@ -1,7 +1,8 @@
 import { OverviewCards } from "@/components/dashboard/overview-cards";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
-import { BudgetGoals } from "@/components/dashboard/budget-goals";
 import { AIAdvisor } from "@/components/dashboard/ai-advisor";
+import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
+import { SpendingBreakdown } from "@/components/dashboard/spending-breakdown";
 
 export default function DashboardPage() {
   return (
@@ -13,13 +14,20 @@ export default function DashboardPage() {
       <OverviewCards />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <div className="lg:col-span-4">
+            <AnalyticsChart />
+        </div>
+         <div className="lg:col-span-3">
+            <SpendingBreakdown />
+        </div>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <div className="lg:col-span-4">
           <RecentTransactions />
         </div>
         <div className="lg:col-span-3">
           <AIAdvisor />
         </div>
       </div>
-      <BudgetGoals />
     </div>
   );
 }
