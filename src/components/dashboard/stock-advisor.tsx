@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,7 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, TrendingUp, Wand2 } from "lucide-react";
+import { Loader2, RefreshCw, TrendingUp, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const stockInsightsSchema = z.object({
@@ -37,8 +37,10 @@ const stockInsightsSchema = z.object({
 
 export function StockAdvisor() {
   const [loading, setLoading] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
   const [result, setResult] = useState<StockInsightsOutput | null>(null);
   const { toast } = useToast();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<StockInsightsInput>({
     resolver: zodResolver(stockInsightsSchema),
@@ -47,12 +49,34 @@ export function StockAdvisor() {
     },
   });
 
+  const clearPolling = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
   const onSubmit = async (data: StockInsightsInput) => {
     setLoading(true);
     setResult(null);
+    clearPolling(); // Stop any previous polling
     try {
       const insights = await getStockInsights(data);
       setResult(insights);
+      // Start polling for new data
+      intervalRef.current = setInterval(async () => {
+        try {
+          setIsPolling(true);
+          const newInsights = await getStockInsights(data);
+          setResult(newInsights);
+        } catch (error) {
+            console.error("Error polling stock insights:", error);
+            // Silently fail on poll
+        } finally {
+            setIsPolling(false);
+        }
+      }, 10000); // Poll every 10 seconds
+
     } catch (error) {
       console.error("Error getting stock insights:", error);
       toast({
@@ -65,6 +89,13 @@ export function StockAdvisor() {
     }
   };
 
+  // Cleanup interval on component unmount
+  useEffect(() => {
+    return () => {
+      clearPolling();
+    };
+  }, []);
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
@@ -73,7 +104,7 @@ export function StockAdvisor() {
             <CardTitle className="font-headline">AI Stock Advisor</CardTitle>
         </div>
         <CardDescription>
-          Get AI-powered insights on stock performance.
+          Get AI-powered insights on stock performance. Data refreshes automatically.
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -113,7 +144,10 @@ export function StockAdvisor() {
             {result && (
               <Card className="mt-4 bg-muted/50">
                 <CardContent className="p-4 space-y-2">
-                    <h4 className="font-bold font-headline">Analysis for {form.getValues('ticker').toUpperCase()}</h4>
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-bold font-headline">Analysis for {form.getValues('ticker').toUpperCase()}</h4>
+                      {isPolling && <RefreshCw className="h-4 w-4 text-muted-foreground animate-spin" />}
+                    </div>
                     <p className="text-sm text-muted-foreground">{result.analysis}</p>
                 </CardContent>
               </Card>
