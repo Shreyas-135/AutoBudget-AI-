@@ -102,7 +102,7 @@ export function DebtPayoffCalculator() {
             {isRecommended && <Badge><Trophy className="mr-1.5 h-3 w-3" />Recommended</Badge>}
         </div>
         <CardDescription>
-          Debt-free in <strong>{plan.totalMonths} months</strong>. Total interest paid: <strong>${plan.totalInterestPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+          Debt-free in <strong>{plan.totalMonths} months</strong>. Total interest paid: <strong>${(plan.totalInterestPaid ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
         </CardDescription>
       </CardHeader>
       <CardContent>
