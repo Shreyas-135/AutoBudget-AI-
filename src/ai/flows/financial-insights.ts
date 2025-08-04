@@ -24,8 +24,8 @@ const FinancialInsightsInputSchema = z.object({
 export type FinancialInsightsInput = z.infer<typeof FinancialInsightsInputSchema>;
 
 const FinancialInsightsOutputSchema = z.object({
-  summary: z.string().describe('A summary of the user financial situation.'),
-  advice: z.array(z.string()).describe('Personalized advice based on spending habits.'),
+  summary: z.string().describe('A summary of the user\'s financial situation, focusing on the ratio of needs vs. wants.'),
+  advice: z.array(z.string()).describe('Personalized advice and behavioral coaching based on spending habits and financial psychology.'),
 });
 export type FinancialInsightsOutput = z.infer<typeof FinancialInsightsOutputSchema>;
 
@@ -37,20 +37,26 @@ const prompt = ai.definePrompt({
   name: 'financialInsightsPrompt',
   input: {schema: FinancialInsightsInputSchema},
   output: {schema: FinancialInsightsOutputSchema},
-  prompt: `You are a personal finance advisor providing insights and advice based on user's financial data.
+  prompt: `You are a financial psychologist and coach. Your goal is to analyze a user's spending patterns and provide actionable, empathetic advice based on behavioral finance principles.
 
-  Provide a summary of the user's financial situation, including income, expenses, and potential savings.
-  Based on the provided data, give personalized advice to help the user optimize their budget and meet their financial goals.
+  Analyze the user's income, expenses, and savings goal. Provide a summary that highlights key financial ratios (e.g., savings rate, debt-to-income if applicable, spending on wants vs. needs).
+  
+  Then, offer personalized advice and coaching. Look for behavioral patterns in their spending. For example:
+  - Is there high spending in categories like "Food" or "Shopping" that might indicate emotional or impulse spending?
+  - Is there a lack of savings that might point to a present bias?
+  - Are their goals realistic given their spending habits?
 
-  Income: {{income}}
-  Expenses:
+  Frame your advice as a supportive coach. Instead of just saying "spend less on X," offer strategies like "It looks like a significant portion of your budget goes to dining out. This can sometimes be a sign of stress or a need for convenience. Have you considered trying meal prepping as a way to both save money and have healthy food ready on busy days?"
+  
+  User Data:
+  - Monthly Income: {{income}}
+  - Monthly Savings Goal: {{#if savingsGoal}}{{savingsGoal}}{{else}}Not set{{/if}}
+  - Expenses:
   {{#each expenses}}
   - {{category}}: {{amount}}
   {{/each}}
-  Savings Goal: {{savingsGoal}}
-  Output the advice as a numbered list.
-  Summary:
-  Advice:`, 
+  
+  Generate a concise summary and a list of actionable, behavioral-focused advice.`,
 });
 
 const financialInsightsFlow = ai.defineFlow(
