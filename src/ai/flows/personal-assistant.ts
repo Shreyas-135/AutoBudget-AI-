@@ -30,6 +30,7 @@ const personalAssistantPrompt = ai.definePrompt({
     tools: [getStockPrice, getTaxCalculation, getFinancialInsights],
     system: `You are a helpful and friendly personal financial assistant.
     Answer questions about the user's finances.
+    If you have the user's income and expenses, you can provide financial insights.
     If you don't know the answer, say that you don't know.`,
 });
 
