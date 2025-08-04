@@ -1,11 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Bot, DollarSign, Target } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { useEffect, useState } from "react";
 
 export default function LandingPage() {
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -92,7 +101,7 @@ export default function LandingPage() {
         </section>
       </main>
       <footer className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} AutoBudget AI. All rights reserved.</p>
+        <p>&copy; {year} AutoBudget AI. All rights reserved.</p>
       </footer>
     </div>
   );
