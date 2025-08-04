@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -52,9 +53,14 @@ export function AIAdvisor() {
   const form = useForm<FinancialInsightsInput>({
     resolver: zodResolver(financialInsightsSchema),
     defaultValues: {
-      income: 1000,
-      expenses: [{ category: "Rent", amount: 500 }],
-      savingsGoal: 200,
+      income: 5000,
+      expenses: [
+        { category: "Rent", amount: 1500 },
+        { category: "Groceries", amount: 400 },
+        { category: "Transport", amount: 200 },
+        { category: "Utilities", amount: 150 },
+      ],
+      savingsGoal: 1000,
     },
   });
 
