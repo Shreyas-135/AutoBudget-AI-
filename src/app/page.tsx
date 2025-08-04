@@ -9,7 +9,7 @@ import { Logo } from "@/components/logo";
 import { useEffect, useState } from "react";
 
 export default function LandingPage() {
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
     setYear(new Date().getFullYear());
@@ -101,7 +101,7 @@ export default function LandingPage() {
         </section>
       </main>
       <footer className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-muted-foreground">
-        <p>&copy; {year} AutoBudget AI. All rights reserved.</p>
+        <p>&copy; {year || new Date().getFullYear()} AutoBudget AI. All rights reserved.</p>
       </footer>
     </div>
   );
