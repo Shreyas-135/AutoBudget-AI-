@@ -5,11 +5,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  getTaxCalculation,
-  TaxCalculatorInput,
-  TaxCalculatorOutput,
-} from "@/ai/flows/tax-calculator";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -51,6 +46,28 @@ const TaxCalculatorInputSchema = z.object({
   filingStatus: z.enum(['single', 'married_jointly', 'married_separately', 'head_of_household']),
 });
 
+type TaxCalculatorInput = z.infer<typeof TaxCalculatorInputSchema>;
+
+type TaxCalculatorOutput = {
+    estimatedTax: number;
+    effectiveRate: number;
+    breakdown: {
+        bracket: string;
+        taxableAmount: number;
+        taxPaid: number;
+    }[];
+};
+
+const mockTaxResult: TaxCalculatorOutput = {
+    estimatedTax: 6950,
+    effectiveRate: 13.9,
+    breakdown: [
+        { bracket: "12%", taxableAmount: 44725, taxPaid: 5367 },
+        { bracket: "10%", taxableAmount: 11000, taxPaid: 1100 }
+    ]
+}
+
+
 export function TaxCalculator() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TaxCalculatorOutput | null>(null);
@@ -68,8 +85,9 @@ export function TaxCalculator() {
     setLoading(true);
     setResult(null);
     try {
-      const taxData = await getTaxCalculation(data);
-      setResult(taxData);
+      // MOCK DELAY & DATA
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setResult(mockTaxResult);
     } catch (error) {
       console.error("Error calculating taxes:", error);
       toast({

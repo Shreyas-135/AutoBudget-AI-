@@ -5,11 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  getStockInsights,
-  type StockInsightsInput,
-  type StockInsightsOutput,
-} from "@/ai/flows/stock-insights";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +32,15 @@ import { cn } from "@/lib/utils";
 const stockInsightsSchema = z.object({
   ticker: z.string().min(1, "Ticker symbol is required.").max(5, "Ticker must be 5 characters or less."),
 });
+
+type StockInsightsInput = z.infer<typeof stockInsightsSchema>;
+
+type StockInsightsOutput = {
+    price: number;
+    analysis: string;
+    recommendation: 'Buy' | 'Sell' | 'Hold';
+    confidenceScore: number;
+};
 
 const RecommendationBadge = ({ recommendation }: { recommendation: StockInsightsOutput['recommendation'] }) => {
     const variant = {
@@ -74,13 +78,25 @@ export function StockAdvisor() {
     setResult(null);
     clearPolling(); // Stop any previous polling
     try {
-      const insights = await getStockInsights(data);
-      setResult(insights);
+      // MOCK DELAY & DATA
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const mockInsights: StockInsightsOutput = {
+        price: Math.random() * 100 + 150, // Random price for demo
+        analysis: "The company shows strong fundamentals with consistent revenue growth. The recent product launch is expected to positively impact the next quarter. However, market volatility presents some risk.",
+        recommendation: "Buy",
+        confidenceScore: 0.85
+      };
+      setResult(mockInsights);
+
       // Start polling for new data
       intervalRef.current = setInterval(async () => {
         try {
           setIsPolling(true);
-          const newInsights = await getStockInsights(data);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          const newInsights: StockInsightsOutput = {
+            ...mockInsights,
+            price: mockInsights.price + (Math.random() * 10 - 5), // Simulate price fluctuation
+          };
           setResult(newInsights);
         } catch (error) {
             console.error("Error polling stock insights:", error);
