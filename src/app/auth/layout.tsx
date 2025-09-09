@@ -1,4 +1,3 @@
-import { Logo } from "@/components/logo";
 import Image from "next/image";
 
 export default function AuthLayout({
@@ -10,15 +9,12 @@ export default function AuthLayout({
         <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
             <div className="flex items-center justify-center p-6 lg:p-8">
                 <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
-                     <div className="flex justify-center">
-                        <Logo />
-                    </div>
                     {children}
                 </div>
             </div>
             <div className="hidden bg-muted lg:block">
                 <Image
-                    src="https://placehold.co/1920x1080.png"
+                    src="https://picsum.photos/1920/1080"
                     alt="Image"
                     width="1920"
                     height="1080"
