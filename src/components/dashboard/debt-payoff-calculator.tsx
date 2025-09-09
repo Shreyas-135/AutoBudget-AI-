@@ -5,11 +5,6 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  getDebtPayoffPlan,
-  type DebtPayoffInput,
-  type DebtPayoffOutput,
-} from "@/ai/flows/debt-payoff-calculator";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -54,6 +49,65 @@ const DebtPayoffInputSchema = z.object({
   extraPayment: z.coerce.number().optional(),
 });
 
+type DebtPayoffInput = z.infer<typeof DebtPayoffInputSchema>;
+
+type PayoffStep = {
+    month: number;
+    debtName: string;
+    paymentAmount: number;
+    remainingBalance: number;
+};
+
+type PayoffPlan = {
+    totalMonths: number;
+    totalInterestPaid: number;
+    breakdown: PayoffStep[];
+};
+
+type DebtPayoffOutput = {
+    avalanche: PayoffPlan;
+    snowball: PayoffPlan;
+};
+
+const mockPayoffResult: DebtPayoffOutput = {
+    avalanche: {
+        totalMonths: 36,
+        totalInterestPaid: 4500.21,
+        breakdown: [
+            { month: 1, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 4750 },
+            { month: 2, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 4500 },
+            { month: 3, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 4250 },
+            { month: 4, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 4000 },
+            { month: 5, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 3750 },
+            { month: 6, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 3500 },
+            { month: 7, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 3250 },
+            { month: 8, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 3000 },
+            { month: 9, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 2750 },
+            { month: 10, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 2500 },
+            { month: 11, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 2250 },
+            { month: 12, debtName: "Credit Card", paymentAmount: 250, remainingBalance: 2000 },
+        ]
+    },
+    snowball: {
+        totalMonths: 38,
+        totalInterestPaid: 5100.45,
+        breakdown: [
+            { month: 1, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 19650 },
+            { month: 2, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 19300 },
+            { month: 3, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 18950 },
+            { month: 4, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 18600 },
+            { month: 5, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 18250 },
+            { month: 6, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 17900 },
+            { month: 7, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 17550 },
+            { month: 8, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 17200 },
+            { month: 9, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 16850 },
+            { month: 10, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 16500 },
+            { month: 11, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 16150 },
+            { month: 12, debtName: "Student Loan", paymentAmount: 350, remainingBalance: 15800 },
+        ]
+    }
+}
+
 
 export function DebtPayoffCalculator() {
   const [loading, setLoading] = useState(false);
@@ -80,8 +134,9 @@ export function DebtPayoffCalculator() {
     setLoading(true);
     setResult(null);
     try {
-      const plan = await getDebtPayoffPlan(data);
-      setResult(plan);
+      // MOCK DELAY & DATA
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setResult(mockPayoffResult);
     } catch (error) {
       console.error("Error calculating debt payoff plan:", error);
       toast({

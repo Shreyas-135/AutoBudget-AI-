@@ -5,11 +5,6 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  getFinancialInsights,
-  type FinancialInsightsInput,
-  type FinancialInsightsOutput,
-} from "@/ai/flows/financial-insights";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +40,14 @@ const financialInsightsSchema = z.object({
   savingsGoal: z.coerce.number().optional(),
 });
 
+type FinancialInsightsInput = z.infer<typeof financialInsightsSchema>;
+
+type FinancialInsightsOutput = {
+  summary: string;
+  advice: string[];
+};
+
+
 export function AIAdvisor() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<FinancialInsightsOutput | null>(null);
@@ -73,8 +76,17 @@ export function AIAdvisor() {
     setLoading(true);
     setResult(null);
     try {
-      const insights = await getFinancialInsights(data);
-      setResult(insights);
+      // MOCK DELAY & DATA
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const mockInsights: FinancialInsightsOutput = {
+        summary: "Based on your income and expenses, you have a solid savings potential. Your main spending is on housing, which is typical. There's room to optimize discretionary spending.",
+        advice: [
+            "Consider setting a specific budget for 'Shopping' to control impulse buys.",
+            "Look for opportunities to reduce utility bills, such as by using energy-efficient appliances.",
+            "Your savings goal is achievable. Automate transfers to your savings account to stay consistent."
+        ]
+      }
+      setResult(mockInsights);
     } catch (error) {
       console.error("Error getting financial insights:", error);
       toast({
