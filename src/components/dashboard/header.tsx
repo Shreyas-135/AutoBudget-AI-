@@ -12,7 +12,6 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Menu,
   Search,
@@ -82,14 +81,12 @@ export function DashboardHeader() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
-            className="overflow-hidden rounded-full"
+            className="rounded-full"
           >
-            <Avatar>
-              <AvatarImage src="https://placehold.co/40x40.png" />
-              <AvatarFallback>UA</AvatarFallback>
-            </Avatar>
+            <User className="h-5 w-5" />
+            <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
